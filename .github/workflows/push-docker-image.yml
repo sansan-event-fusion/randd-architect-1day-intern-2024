@@ -1,0 +1,41 @@
+name: Push Docker Image to ECR
+
+on:
+  workflow_dispatch:
+
+jobs:
+  update-ecr-image:
+    name: "[${{ github.actor }}] Update ECR Image"
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ap-northeast-1
+          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_ARN }}
+
+      - name: Login to Amazon ECR Private
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build, tag, and push docker image to Amazon ECR
+        id: build-image-and-push
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          REPOSITORY: randd/samples/1day-intern/app
+          IMAGE_TAG: ${{ github.actor }}.${{ github.sha }}
+        run: |
+          docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
+          docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
+
+      - name: Output image tag
+        if: steps.build-image-and-push.outcome == 'success'
+        run: |
+          echo "image tag: \`${{ github.actor }}.${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
