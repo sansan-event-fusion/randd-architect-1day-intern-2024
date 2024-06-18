@@ -1,7 +1,12 @@
 from io import StringIO
+import requests
 
 import pandas as pd
 import streamlit as st
+
+response = requests.get("https://circuit-trial.stg.rd.ds.sansan.com/api/cards/count", timeout=10)
+
+st.write(response.json())
 
 # タイトル
 st.title("サンプルアプリ")
