@@ -8,8 +8,7 @@ from app import API_URL
 
 
 def get_user_list(offset: int, limit: int):
-    users = requests.get(API_URL + "api/cards/", params={
-                         "offset": offset, "limit": limit}, timeout=10).json()
+    users = requests.get(API_URL + "api/cards/", params={"offset": offset, "limit": limit}, timeout=10).json()
 
     users_list = [f"{user['full_name']} / {user['user_id']}" for user in users]
 
