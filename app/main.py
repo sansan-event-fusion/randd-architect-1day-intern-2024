@@ -7,17 +7,58 @@ import streamlit as st
 # タイトル
 st.title("サンプルアプリ")
 
+
 def get_coordinates(data):  # noqa: C901
     address = data["address"]
 
     prefectures = [
-        "北海道", "青森県", "岩手県", "宮城県", "秋田県", "山形県", "福島県",
-        "茨城県", "栃木県", "群馬県", "埼玉県", "千葉県", "東京都", "神奈川県",
-        "新潟県", "富山県", "石川県", "福井県", "山梨県", "長野県", "岐阜県",
-        "静岡県", "愛知県", "三重県", "滋賀県", "京都府", "大阪府", "兵庫県",
-        "奈良県", "和歌山県", "鳥取県", "島根県", "岡山県", "広島県", "山口県",
-        "徳島県", "香川県", "愛媛県", "高知県", "福岡県", "佐賀県", "長崎県",
-        "熊本県", "大分県", "宮崎県", "鹿児島県", "沖縄県"
+        "北海道",
+        "青森県",
+        "岩手県",
+        "宮城県",
+        "秋田県",
+        "山形県",
+        "福島県",
+        "茨城県",
+        "栃木県",
+        "群馬県",
+        "埼玉県",
+        "千葉県",
+        "東京都",
+        "神奈川県",
+        "新潟県",
+        "富山県",
+        "石川県",
+        "福井県",
+        "山梨県",
+        "長野県",
+        "岐阜県",
+        "静岡県",
+        "愛知県",
+        "三重県",
+        "滋賀県",
+        "京都府",
+        "大阪府",
+        "兵庫県",
+        "奈良県",
+        "和歌山県",
+        "鳥取県",
+        "島根県",
+        "岡山県",
+        "広島県",
+        "山口県",
+        "徳島県",
+        "香川県",
+        "愛媛県",
+        "高知県",
+        "福岡県",
+        "佐賀県",
+        "長崎県",
+        "熊本県",
+        "大分県",
+        "宮崎県",
+        "鹿児島県",
+        "沖縄県",
     ]
 
     for prefecture in prefectures:
@@ -39,6 +80,7 @@ def get_coordinates(data):  # noqa: C901
     coordinates_response = requests.get(get_adress_url, timeout=10)
     coordinates = coordinates_response.json()[0]["geometry"]["coordinates"]
     return coordinates[0], coordinates[1]
+
 
 def find_user_id(full_name, company_name, users):
     for user in users:
@@ -68,5 +110,5 @@ response_body = json.loads(response_body)
 pref_list = []
 for data in response_body:
     longtitude, latitude = get_coordinates(data=data)
-    pref_list.append({"longitude":longtitude, "latitude":latitude})
+    pref_list.append({"longitude": longtitude, "latitude": latitude})
 st.map(pref_list)
