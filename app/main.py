@@ -1,7 +1,6 @@
 import networkx as nx
-import streamlit as st
 import requests
-
+import streamlit as st
 
 st.set_page_config(page_title="Optimal Contact Path")
 # タイトル
@@ -17,8 +16,8 @@ def fetch_all_contacts():
     offset = 0
     limit = 10000
     while True:
-        url = f'https://circuit-trial.stg.rd.ds.sansan.com/api/contacts/?offset={offset}&limit={limit}'
-        response = requests.get(url)
+        url = f"https://circuit-trial.stg.rd.ds.sansan.com/api/contacts/?offset={offset}&limit={limit}"
+        response = requests.get(url, timeout=10)
         response.raise_for_status()
         batch = response.json()
         contacts.extend(batch)
@@ -29,7 +28,8 @@ def fetch_all_contacts():
 
 
 # CSSスタイルを追加して名刺をカード形式にする
-st.markdown("""
+st.markdown(
+    """
     <style>
     .card {
         background-color: white;
@@ -57,7 +57,9 @@ st.markdown("""
         margin: 20px auto;
     }
     </style>
-""", unsafe_allow_html=True)
+    """,
+    unsafe_allow_html=True,
+)
 
 
 # 全ての名刺情報を取得する関数
@@ -66,8 +68,8 @@ def fetch_all_cards():
     offset = 0
     limit = 10000
     while True:
-        url = f'https://circuit-trial.stg.rd.ds.sansan.com/api/cards/?offset={offset}&limit={limit}'
-        response = requests.get(url)
+        url = f"https://circuit-trial.stg.rd.ds.sansan.com/api/cards/?offset={offset}&limit={limit}"
+        response = requests.get(url, timeout=10)
         response.raise_for_status()
         batch = response.json()
         cards.extend(batch)
@@ -87,22 +89,22 @@ except requests.exceptions.RequestException as e:
 
 def fetch_card(user_id):
     """指定されたユーザーIDの名刺データを取得"""
-    url = f'https://circuit-trial.stg.rd.ds.sansan.com/api/cards/{user_id}'
-    response = requests.get(url)
+    url = f"https://circuit-trial.stg.rd.ds.sansan.com/api/cards/{user_id}"
+    response = requests.get(url, timeout=10)
     response.raise_for_status()
     return response.json()[0]  # リストの最初の要素を返す
 
 
 def build_graph(contacts):
     """連絡履歴データからグラフを作成"""
-    G = nx.Graph()
+    graph_data = nx.Graph()
     for contact in contacts:
-        owner_id = contact['owner_user_id']
-        user_id = contact['user_id']
+        owner_id = contact["owner_user_id"]
+        user_id = contact["user_id"]
         # 類似度を重みとしてエッジを追加
         similarity = 1.0  # 類似度の計算方法に応じて適切に設定
-        G.add_edge(owner_id, user_id, weight=1/similarity)
-    return G
+        graph_data.add_edge(owner_id, user_id, weight=1 / similarity)
+    return graph_data
 
 
 if st.button("検索"):
@@ -112,7 +114,7 @@ if st.button("検索"):
             contacts = fetch_all_contacts()
 
             # 名前からユーザーIDを検索
-            user_ids = {card['full_name']: card['user_id'] for card in cards}
+            user_ids = {card["full_name"]: card["user_id"] for card in cards}
             user_id = user_ids.get(user_name)
             target_id = user_ids.get(target_name)
 
@@ -124,8 +126,7 @@ if st.button("検索"):
 
                 # 最短経路の計算
                 if nx.has_path(G, user_id, target_id):
-                    paths = list(nx.all_shortest_paths(G, source=user_id, target=target_id, weight='weight'))
-                    
+                    paths = list(nx.all_shortest_paths(G, source=user_id, target=target_id, weight="weight"))
                     # トグルを用いた経路の表示
                     for i, path in enumerate(paths[:3]):
                         with st.expander(f"{i+1}番目に最適な連絡方法"):
@@ -133,7 +134,8 @@ if st.button("検索"):
                             for uid in path:
                                 try:
                                     card = fetch_card(uid)
-                                    st.markdown(f"""
+                                    st.markdown(
+                                        f"""
                                         <div class="card">
                                             <h4>{card.get('full_name', '不明')}</h4>
                                             <p><b>User ID:</b> {card.get('user_id', '不明')}</p>
@@ -142,7 +144,9 @@ if st.button("検索"):
                                             <p><b>Address:</b> {card.get('address', '不明')}</p>
                                             <p><b>Phone:</b> {card.get('phone_number', '不明')}</p>
                                         </div>
-                                    """, unsafe_allow_html=True)
+                                        """,
+                                        unsafe_allow_html=True,
+                                    )
                                     if uid != path[-1]:
                                         st.markdown('<div class="arrow"></div>', unsafe_allow_html=True)
                                 except Exception as e:
