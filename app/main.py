@@ -90,7 +90,9 @@ def find_user_id(full_name, company_name, users):
 
 
 with st.form("my_form", clear_on_submit=False):
-    company = st.selectbox(label="企業名を入力してください", options=["有限会社井上運輸", "清水運輸合同会社", "村上水産株式会社"])
+    company = st.selectbox(
+        label="企業名を入力してください", options=["有限会社井上運輸", "清水運輸合同会社", "村上水産株式会社"]
+    )
     name = st.text_input("名前を入力してください")
     submitted = st.form_submit_button("検索")
 
