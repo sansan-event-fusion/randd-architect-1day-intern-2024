@@ -110,7 +110,7 @@ if submitted:
         pref_list = []
         for data in response_body:
             longtitude, latitude = get_coordinates(data=data)
-            pref_list.append({"longitude":longtitude, "latitude":latitude})
+            pref_list.append({"longitude": longtitude, "latitude": latitude})
         st.map(pref_list)
 else:
     st.write("名前と企業名を入力してください。")
