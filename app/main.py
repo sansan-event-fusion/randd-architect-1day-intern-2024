@@ -157,7 +157,9 @@ elif st.button("自社の名刺交換者"):
     user_id = result["user_id"].iloc[0]
     company_id = result["company_id"].iloc[0]
 
-    url = "https://circuit-trial.stg.rd.ds.sansan.com/api/contacts/owner_companies/" + company_id + "?offset=0&limit=100"
+    url = (
+        "https://circuit-trial.stg.rd.ds.sansan.com/api/contacts/owner_companies/" + company_id + "?offset=0&limit=100"
+    )
     res = requests.get(url)  # noqa: S113
 
     Com_have_maishi_df = json.loads(res.text)
@@ -241,7 +243,7 @@ elif st.button("自社の名刺交換者"):
     Com_choropleth = folium.Choropleth(
         geo_data=geojson,
         data=Com_count_df,
-            columns=["Prefecture_code", "Infections"],
+        columns=["Prefecture_code", "Infections"],
         key_on="feature.properties.id",
         fill_color="YlOrRd",
         nan_fill_color="darkgray",
