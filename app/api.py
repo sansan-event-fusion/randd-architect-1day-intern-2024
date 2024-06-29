@@ -16,8 +16,7 @@ def get_user_list(offset: int, limit: int):
 
 
 def get_user(user_id: str):
-    user = requests.get(
-        API_URL + f"api/cards/{user_id}", timeout=10).json()[0]
+    user = requests.get(API_URL + f"api/cards/{user_id}", timeout=10).json()[0]
 
     address = re.sub(r"[0-9-]", "", user["address"])
     ret = geocoder.osm(address, timeout=5.0)
