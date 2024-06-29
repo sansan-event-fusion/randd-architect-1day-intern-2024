@@ -1,8 +1,7 @@
+import openai
 import os
 import requests
 import streamlit as st
-
-import openai
 
 openai.api_key = os.environ.get("OPENAP_APIKEY")
 
@@ -19,7 +18,8 @@ def get_additional_recommendations(user_data, similar_users_data):
     # GPTによる応答生成
     try:
         response = openai.Completion.create(
-            model="gpt-3.5-turbo-instruct", prompt=prompt, temperature=0.7, max_tokens=1500
+            model="gpt-3.5-turbo-instruct", prompt=prompt,
+            temperature=0.7, max_tokens=1500
         )
         return response.choices[0].text
 
@@ -65,12 +65,16 @@ if user_id:
         st.error("データの取得に失敗しました。")
 
     response = requests.get(
-        f"""https://circuit-trial.stg.rd.ds.sansan.com/api/contacts/owner_users/{user_id}""", timeout=10
+        f"""
+        https://circuit-trial.stg.rd.ds.sansan.com/api/contacts/owner_users/{user_id}
+        """, timeout=10
     )
     user_have_cards = response.json()
 
     # APIエンドポイントのベースURL
-    base_url = f"https://circuit-trial.stg.rd.ds.sansan.com/api/cards/{{}}/similar_top10_users"
+    base_url = """
+    https://circuit-trial.stg.rd.ds.sansan.com/api/cards/{{}}/similar_top10_users
+    """
 
     similar_users_list = []
 
@@ -95,7 +99,7 @@ if user_id:
 
     # filtered_dataをカード形式で一気に表示
     st.markdown(
-        f"""
+        """
         ### あなたの取引先と似ているユーザー
         """,
         unsafe_allow_html=True,
@@ -103,7 +107,8 @@ if user_id:
     for data in filtered_data:
         st.markdown(
             f"""
-            <div style="border:1px solid #ddd; border-radius:10px; padding:10px; margin:10px 0;">
+            <div style="border:1px solid #ddd; border-radius:10px; padding:
+            10px; margin:10px 0;">
                 <h2>{data['full_name']}</h2>
                 <p><strong>役職:</strong> {data['position']}</p>
                 <p><strong>会社名:</strong> {data['company_name']}</p>
