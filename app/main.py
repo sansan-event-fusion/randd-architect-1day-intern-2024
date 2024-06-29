@@ -10,10 +10,15 @@ mst_url = "https://circuit-trial.stg.rd.ds.sansan.com/api/cards/?offset=0&limit=
 mst_r = requests.get(mst_url)
 mst_df = pd.DataFrame(mst_r.json())
 
-company_dict = mst_df[["company_id", "company_name"]].drop_duplicates().set_index("company_id")["company_name"].to_dict()
+company_dict = (
+    mst_df[["company_id", "company_name"]].drop_duplicates().set_index("company_id")["company_name"].to_dict()
+)
+
 
 def get_transactions(company_id):
-    trans_url = f"https://circuit-trial.stg.rd.ds.sansan.com/api/contacts/owner_companies/{company_id}?offset=0&limit=1000"
+    trans_url = (
+        f"https://circuit-trial.stg.rd.ds.sansan.com/api/contacts/owner_companies/{company_id}?offset=0&limit=1000"
+    )
     trans_r = requests.get(trans_url)
     trans_df = pd.DataFrame(trans_r.json())
     return format_trans_table(trans_df, mst_df)
@@ -38,12 +43,16 @@ if submit:
 
 if submit and trans_df is not None:
     st.header("summary")
-    summary = trans_df.groupby("owner_user_id").agg({"user_id": "count", "score": "mean"}).sort_values("score", ascending=False)
+    summary = (
+        trans_df.groupby("owner_user_id")
+        .agg({"user_id": "count", "score": "mean"})
+        .sort_values("score", ascending=False)
+    )
 
     for idx, row in summary.iterrows():
         st.metric(
             label=idx,
             value=f"{round(row['score'], 1)} point",
             delta=f"{int(row['user_id'])}回の交換",
-            delta_color="off"
+            delta_color="off",
         )
