@@ -149,7 +149,7 @@ for _, row in company_data.iterrows():
         )
 fig.update_layout(
     title=f"従業員ごとの{selected_interval}ごとの履歴件数",
-    xaxis_title=selected_interval.capitalize(),
+    xaxis_title=selected_interval.capitalize() if selected_interval else "Default Title",
     yaxis_title="連絡履歴件数",
     hovermode="x",
     legend_title="従業員名",
