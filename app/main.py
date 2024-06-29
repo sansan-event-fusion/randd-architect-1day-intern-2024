@@ -1,18 +1,19 @@
-from pathlib import Path
 import os
 import requests
 import streamlit as st
 
 import openai
 
-openai.api_key = os.environ.get('OPENAP_APIKEY')
+openai.api_key = os.environ.get("OPENAP_APIKEY")
+
 
 def get_additional_recommendations(user_data, similar_users_data):
     # プロンプトを生成する
     prompt = (
         f"以下は私のユーザーの詳細情報です:\n{user_data}\n\n"
         f"以下は推薦ユーザーの情報です:\n{similar_users_data}\n\n"
-        "この情報を基に、すべての推薦ユーザーに営業をかけるときはどうすればよいか？ユーザーにマッチした攻略方法を，それぞれのユーザーごとに提示してください．PMBOKのステークホルダーマネジメントを意識してください．"
+        "この情報を基に、すべての推薦ユーザーに営業をかけるときはどうすればよいか？ユーザーにマッチした攻略方法を，"
+        "それぞれのユーザーごとに提示してください．PMBOKのステークホルダーマネジメントを意識してください．"
     )
 
     # GPTによる応答生成
@@ -28,16 +29,19 @@ def get_additional_recommendations(user_data, similar_users_data):
     except openai.error.RateLimitError:
         return "APIクォータを超えました。プランと請求情報を確認してください。"
 
+
 # タイトル
+
+
 st.title("営業コンサルくん")
 
 # ユーザーIDの入力欄を作成する
-user_id = st.text_input('あなたのユーザーIDを入力してください')
+user_id = st.text_input("あなたのユーザーIDを入力してください")
 
 # 入力されたユーザーIDでAPIを叩いてデータを取得
 if user_id:
     # ダミーのAPIエンドポイント（実際のAPIエンドポイントに置き換えてください）
-    response = requests.get("https://circuit-trial.stg.rd.ds.sansan.com/api/cards/{}".format(user_id))
+    response = requests.get(f"https://circuit-trial.stg.rd.ds.sansan.com/api/cards/{user_id}", timeout=10)
     
     if response.status_code == 200:
         user_data_list = response.json()
@@ -63,29 +67,31 @@ if user_id:
     else:
         st.error("データの取得に失敗しました。")
     
-    response = requests.get("https://circuit-trial.stg.rd.ds.sansan.com/api/contacts/owner_users/{}".format(user_id))
+    response = requests.get(f"https://circuit-trial.stg.rd.ds.sansan.com/api/contacts/owner_users/{user_id}", timeout=10)
     user_have_cards = response.json()
     
     # APIエンドポイントのベースURL
-    base_url = "https://circuit-trial.stg.rd.ds.sansan.com/api/cards/{}/similar_top10_users"
+    base_url = f"https://circuit-trial.stg.rd.ds.sansan.com/api/cards/{{}}/similar_top10_users"
 
     similar_users_list = []
 
     # 各ユーザーに対して類似するユーザーを取得し、出力する
     for user in user_have_cards:
-        id = user["user_id"]
-        url = base_url.format(id)
+        user_id_value = user["user_id"]
+        url = base_url.format(user_id_value)
         
         # APIリクエストを送信
-        response = requests.get(url)
+        response = requests.get(url, timeout=10)
         
         if response.status_code == 200:
             similar_users = response.json()
             similar_users_list += similar_users
         else:
-            st.error(f"ユーザー {id} の類似するユーザー情報の取得に失敗しました。")
+            st.error(f"ユーザー {user_id_value} の類似するユーザー情報の取得に失敗しました。")
     
-    filtered_data = [d for d in similar_users_list if '千葉県' in d['address'] and d['user_id'] != str(user_id)]
+    filtered_data = [d for d in similar_users_list if '千葉県' in d['address']]
+    filtered_data = [d for d in filtered_data if d['user_id'] != str(user_id)]
+    
     filtered_data = filtered_data[:4]
     
     # filtered_dataをカード形式で一気に表示
