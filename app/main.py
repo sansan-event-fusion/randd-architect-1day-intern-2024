@@ -37,20 +37,6 @@ def organize_data_by_prefecture(data):
     return dict(data_by_prefecture)
 
 
-def add_prefecture_circles(m, data, coords):
-    for prefecture, count in data.items():
-        if prefecture in coords:
-            folium.CircleMarker(
-                location=coords[prefecture],
-                radius=count / 3,
-                tooltip=f"{prefecture}: {count}社",
-                color="red",
-                fill=True,
-                fill_color="red",
-                fill_opacity=0.6,
-            ).add_to(m)
-
-
 def display_data_by_prefecture(prefecture, data):
     if prefecture in data:
         dataframe = pd.DataFrame(data[prefecture])
@@ -60,38 +46,7 @@ def display_data_by_prefecture(prefecture, data):
         st.write(f"### {prefecture}: 0社")
 
 
-# サンプルデータ
-data = [
-    {
-        "user_id": "9230809757",
-        "company_id": "364994639",
-        "full_name": "後藤 裕太",
-        "position": "カスタマーサポートマネージャー",
-        "company_name": "合同会社森鉱業",
-        "address": "千葉県柏市柏3-7-5",
-        "phone_number": "090-0143-7483",
-    },
-    {
-        "user_id": "3479534060",
-        "company_id": "1683446724",
-        "full_name": "松田 太郎",
-        "position": "次長",
-        "company_name": "有限会社井上運輸",
-        "address": "千葉県柏市柏3-7-5",
-        "phone_number": "070-3121-9804",
-    },
-    {
-        "user_id": "1471907357",
-        "company_id": "1683446724",
-        "full_name": "伊藤 幹",
-        "position": "技術次長",
-        "company_name": "有限会社井上運輸",
-        "address": "千葉県柏市柏3-7-5",
-        "phone_number": "090-1288-6691",
-    },
-]
-
-# データを都道府県ごとに整理
+data = get_cards()
 organized_data = organize_data_by_prefecture(data)
 
 # 都道府県の中心の緯度経度を設定
@@ -146,27 +101,26 @@ prefecture_coords = {
 }
 
 
-# 各都道府県の会社数に比例した円を作成する関数
-def add_prefecture_circles(m, data, coords):
-    for prefecture, count in data.items():
+def add_prefecture_circles(map_obj, data, coords):
+    for prefecture, companies in data.items():
         if prefecture in coords:
             folium.CircleMarker(
                 location=coords[prefecture],
-                radius=count / 3,
-                tooltip=f"{prefecture}: {count}社",
+                radius=len(companies) / 3,
+                tooltip=f"{prefecture}: {len(companies)}社",
                 color="red",
                 fill=True,
                 fill_color="red",
                 fill_opacity=0.6,
-            ).add_to(m)
+            ).add_to(map_obj)
 
 
 # ------------------------画面作成------------------------
 
 st.title("会社数分布地図")
-m = folium.Map(location=[35.68944, 139.69167], zoom_start=6)
-add_prefecture_circles(m, organized_data, prefecture_coords)
-folium_static(m)
+map_obj = folium.Map(location=[35.68944, 139.69167], zoom_start=6)
+add_prefecture_circles(map_obj, organized_data, prefecture_coords)
+folium_static(map_obj)
 
 # 都道府県選択のためのセレクトボックス
 selected_prefecture = st.selectbox("都道府県を選択してください", list(organized_data.keys()))
