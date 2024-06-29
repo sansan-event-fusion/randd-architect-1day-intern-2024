@@ -31,13 +31,13 @@ st.write(f"選択中の会社: {company_name}, id: {company_id}")
 submit = st.button("取引履歴を取得")
 
 if submit and company_id:
-        try:
-            trans_df = get_transactions(company_id)
-            st.dataframe(trans_df, use_container_width=True)
-        except requests.exceptions.RequestException as e:
-            st.write(f"リクエストエラーが発生しました: {e}")
-        except ValueError as e:
-            st.write(f"データ処理エラーが発生しました: {e}")
+    try:
+        trans_df = get_transactions(company_id)
+        st.dataframe(trans_df, use_container_width=True)
+    except requests.exceptions.RequestException as e:
+        st.write(f"リクエストエラーが発生しました: {e}")
+    except ValueError as e:
+        st.write(f"データ処理エラーが発生しました: {e}")
 
 if submit and trans_df is not None:
     st.header("summary")
