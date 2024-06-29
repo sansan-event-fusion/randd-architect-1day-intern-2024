@@ -1,10 +1,7 @@
-from pathlib import Path
-import requests
-
 import pandas as pd
+import requests
 import streamlit as st
-
-from module import compare_positions, format_trans_table
+from module import format_trans_table
 
 company_id = None
 trans_df = None
