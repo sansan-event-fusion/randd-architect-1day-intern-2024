@@ -32,7 +32,5 @@ def format_trans_table(trans_df, mst_df):
     trans_df["owner_user_id"] = trans_df["owner_user_id"].apply(lambda x: mst_df[mst_df["user_id"] == x].iloc[0]["full_name"])
     trans_df["user_id"] = trans_df["user_id"].apply(lambda x: mst_df[mst_df["user_id"] == x].iloc[0]["full_name"])
 
-    return trans_df
-
-def apply_score(r):
-    pass
+    use_cols = ["owner_user_id", "user_id", "score"]
+    return trans_df[use_cols]
