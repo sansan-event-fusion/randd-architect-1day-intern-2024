@@ -9,7 +9,7 @@ from streamlit_folium import folium_static
 
 
 def get_cards():
-    url = "https://circuit-trial.stg.rd.ds.sansan.com/api/cards/?offset=0&limit=1000"
+    url = "https://circuit-trial.stg.rd.ds.sansan.com/api/cards/?offset=0&limit=2000"
     response = requests.get(url, timeout=10)
     return response.json()
 
@@ -106,7 +106,7 @@ def add_prefecture_circles(map_obj, data, coords):
         if prefecture in coords:
             folium.CircleMarker(
                 location=coords[prefecture],
-                radius=len(companies) / 3,
+                radius=len(companies) / 6,
                 tooltip=f"{prefecture}: {len(companies)}社",
                 color="red",
                 fill=True,
@@ -117,7 +117,7 @@ def add_prefecture_circles(map_obj, data, coords):
 
 # ------------------------画面作成------------------------
 
-st.title("会社数分布地図")
+st.title("都道府県ごとの会社分布")
 map_obj = folium.Map(location=[35.68944, 139.69167], zoom_start=6)
 add_prefecture_circles(map_obj, organized_data, prefecture_coords)
 folium_static(map_obj)
