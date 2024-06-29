@@ -101,14 +101,16 @@ users = requests.get(url=user_id_search_url, timeout=10).json()
 if submitted:
     with st.spinner("検索中です..."):
         time.sleep(3)
-user_id = find_user_id(full_name=name, company_name=company, users=users)
-top_10_search_url = "https://circuit-trial.stg.rd.ds.sansan.com/api/cards/" + user_id + "/similar_top10_users"
-r = requests.get(url=top_10_search_url, timeout=10)
+        user_id = find_user_id(full_name=name, company_name=company, users=users)
+        top_10_search_url = "https://circuit-trial.stg.rd.ds.sansan.com/api/cards/" + user_id + "/similar_top10_users"
+        r = requests.get(url=top_10_search_url, timeout=10)
 
-response_body = r.text
-response_body = json.loads(response_body)
-pref_list = []
-for data in response_body:
-    longtitude, latitude = get_coordinates(data=data)
-    pref_list.append({"longitude": longtitude, "latitude": latitude})
-st.map(pref_list)
+        response_body = r.text
+        response_body = json.loads(response_body)
+        pref_list = []
+        for data in response_body:
+            longtitude, latitude = get_coordinates(data=data)
+            pref_list.append({"longitude":longtitude, "latitude":latitude})
+        st.map(pref_list)
+else:
+    st.write("名前と企業名を入力してください。")
