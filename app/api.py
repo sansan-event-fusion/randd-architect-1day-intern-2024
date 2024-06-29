@@ -43,8 +43,7 @@ def get_similar_users(user_id: str):
                 latlng = ret.latlng
                 similar_user["lat"] = latlng[0]
                 similar_user["lon"] = latlng[1]
-                similar_user["similarity"] = float(
-                    similar_user["similarity"]) * 1000
+                similar_user["similarity"] = float(similar_user["similarity"]) * 1000
                 similar_user["color"] = "#0000FF"
                 return_users.append(similar_user)
         except Exception as e:
