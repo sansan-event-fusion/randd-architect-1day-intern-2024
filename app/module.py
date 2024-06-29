@@ -14,7 +14,6 @@ positions = {
     1: ["アナリスト", "ジュニアアナリスト", "ソフトウェアエンジニア", "システムエンジニア", "データサイエンティスト"],
 }
 
-# 役職名からランクを取得する辞書
 position_to_rank = {position: rank for rank, positions in positions.items() for position in positions}
 
 
@@ -27,7 +26,8 @@ def compare_positions(position1, position2):
     rank2 = get_position_rank(position2)
 
     if rank1 is None or rank2 is None:
-        raise ValueError("One or both positions are invalid")
+        msg = f"Invalid position: {position1}, {position2}"
+        raise ValueError(msg)
 
     return rank1 - rank2
 
@@ -36,8 +36,8 @@ def format_trans_table(trans_df, mst_df):
     # trans_dfの_owner_user_id列をmst_dfの名前に変換
     trans_df["score"] = trans_df.apply(
         lambda x: compare_positions(
-            mst_df[mst_df["user_id"] == x["owner_user_id"]].position.values[0],
-            mst_df[mst_df["user_id"] == x["user_id"]].position.values[0],
+            mst_df[mst_df["user_id"] == x["owner_user_id"]].position.to_numpy()[0],
+            mst_df[mst_df["user_id"] == x["user_id"]].position.to_numpy()[0],
         ),
         axis=1,
     )
@@ -47,5 +47,7 @@ def format_trans_table(trans_df, mst_df):
     )
     trans_df["user_id"] = trans_df["user_id"].apply(lambda x: mst_df[mst_df["user_id"] == x].iloc[0]["full_name"])
 
-    use_cols = ["owner_user_id", "user_id", "score"]
-    return trans_df[use_cols]
+    # 使うcolumnsだけに絞り，列名を日本語に変換
+    use_cols = {"owner_user_id": "担当者", "user_id": "取引先", "score": "ポイント"}
+    trans_df = trans_df.rename(columns=use_cols)
+    return trans_df[use_cols.values()]
