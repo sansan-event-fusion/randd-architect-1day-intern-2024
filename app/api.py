@@ -31,8 +31,7 @@ def get_user(user_id: str):
 
 
 def get_similar_users(user_id: str):
-    similar_users = requests.get(
-        API_URL + f"api/cards/{user_id}/similar_top10_users", timeout=10).json()
+    similar_users = requests.get(API_URL + f"api/cards/{user_id}/similar_top10_users", timeout=10).json()
 
     return_users = []
 
