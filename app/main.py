@@ -42,9 +42,7 @@ if submit and company_id:
 if submit and trans_df is not None:
     st.header("summary")
     summary = (
-        trans_df.groupby("担当者")
-        .agg({"取引先": "count", "ポイント": "mean"})
-        .sort_values("ポイント", ascending=False)
+        trans_df.groupby("担当者").agg({"取引先": "count", "ポイント": "mean"}).sort_values("ポイント", ascending=False)
     )
 
     for idx, row in summary.iterrows():
