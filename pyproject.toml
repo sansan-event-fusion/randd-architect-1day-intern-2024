@@ -10,6 +10,7 @@ python = ">=3.10,<3.11"
 streamlit = "1.33.0"
 streamlit-agraph = "0.0.45"
 requests = "^2.31.0"
+geocoder = "^1.38.1"
 
 [tool.poetry.group.dev.dependencies]
 mypy = "^1.9.0"

@@ -1,12 +1,26 @@
-from pathlib import Path
+#!/usr/bin/env python
 
-import pandas as pd
 import streamlit as st
 
-# タイトル
-st.title("サンプルアプリ")
+from app.api import get_similar_users, get_user, get_user_list
+from app.funcs import plot_users
 
-path = Path(__file__).parent / "dummy_data.csv"
-df_dummy = pd.read_csv(path.as_uri(), dtype=str)
+user = st.selectbox(
+    "調べたいユーザをお選びください。",
+    tuple(get_user_list(offset=0, limit=2000)),
+    index=None
+)
 
-st.dataframe(df_dummy)
+if user:
+    users_plots = []
+
+    user_id = user.split("/")[-1].strip()
+    st.write("You selected:", user)
+    similar_users = get_similar_users(user_id)
+    users_plots.extend(similar_users)
+
+    target_user = get_user(user_id)
+
+    users_plots.append(target_user)
+
+    plot_users(users_plots)
