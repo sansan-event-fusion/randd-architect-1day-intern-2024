@@ -1,9 +1,6 @@
-from pathlib import Path
-
 import pandas as pd
-import streamlit as st
 import requests
-from datetime import datetime, timedelta
+import streamlit as st
 
 # API_cards
 API_cards_URL = "https://circuit-trial.stg.rd.ds.sansan.com/api/cards/?offset=0&limit=100"
@@ -12,9 +9,7 @@ API_cards_URL = "https://circuit-trial.stg.rd.ds.sansan.com/api/cards/?offset=0&
 API_contacts_URL = "https://circuit-trial.stg.rd.ds.sansan.com/api/contacts/?offset=0&limit=100"
 
 # API_contacts_users
-API_contacts_users_URL = (
-    "https://circuit-trial.stg.rd.ds.sansan.com/api/contacts/owner_users/4578252120?offset=0&limit=100"
-)
+API_contacts_users_URL = "https://circuit-trial.stg.rd.ds.sansan.com/api/contacts/owner_users"
 
 # タイトル
 st.title("Reconnect Card")
@@ -44,11 +39,12 @@ def fetch_business_contacts():
         return pd.DataFrame()
 
 
-# APIから名刺交換日時を取得
+# APIから特定ユーザーの名刺交換履歴を取得
 @st.cache_data
-def fetch_exchange_history_date():
+def fetch_exchange_history_date(owner_user_id):  # user_id を引数として受け取る
     try:
-        response = requests.get(f"{API_contacts_users_URL}")
+        # URLの形式はAPI仕様に合わせて修正してください
+        response = requests.get(f"{API_contacts_users_URL}/{owner_user_id}?offset=0&limit=100")
         response.raise_for_status()
         return pd.DataFrame(response.json())
     except requests.exceptions.RequestException as e:
@@ -60,29 +56,20 @@ def fetch_exchange_history_date():
 st.subheader("名刺情報")
 cards_df = fetch_business_cards()
 if not cards_df.empty:
-    st.dataframe(cards_df)
+    # フルネームのリストを作成して選択ボックスに表示
+    selected_name = st.selectbox("ユーザーを選択", cards_df["full_name"])
+
+    # 選択されたユーザーの情報を取得
+    selected_user = cards_df[cards_df["full_name"] == selected_name]
+    selected_user_id = selected_user.iloc[0]["user_id"]
+
+    # ボタンをクリックして名刺交換履歴を取得
+    if st.button("このユーザーの名刺交換履歴を表示"):
+        history_df = fetch_exchange_history_date(selected_user_id)
+        if not history_df.empty:
+            st.subheader(f"{selected_name}の名刺交換履歴")
+            st.dataframe(history_df)
+        else:
+            st.write("このユーザーの名刺交換履歴がありません。")
 else:
     st.write("名刺情報がありません。")
-
-# 名刺交換履歴の表示
-st.subheader("名刺交換履歴")
-history_df = fetch_business_contacts()
-if not history_df.empty:
-    st.dataframe(history_df)
-else:
-    st.write("名刺交換履歴がありません。")
-
-# 指定したユーザーの名刺交換情報の表示
-st.subheader("指定したユーザーの名刺交換情報")
-history_df = fetch_exchange_history_date()
-if not history_df.empty:
-    st.dataframe(history_df)
-else:
-    st.write("名刺交換情報がありません。")
-
-
-# 元ファイル
-# path = Path(__file__).parent / "dummy_data.csv"
-# df_dummy = pd.read_csv(path.as_uri(), dtype=str)
-
-# st.dataframe(df_dummy)
