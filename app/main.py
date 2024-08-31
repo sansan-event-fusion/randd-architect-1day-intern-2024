@@ -35,8 +35,18 @@ def show_data(year):
     for owner_user_id in owner_user_ids:
         url = f"https://circuit-trial.stg.rd.ds.sansan.com/api/contacts/owner_users/{owner_user_id}/count?start_date={year}-01-01T00%3A00%3A00Z&end_date={year}-12-31T00%3A00%3A00Z"
         contact_count_by_user = fetch_data_number(url)
+
+        url = f"https://circuit-trial.stg.rd.ds.sansan.com/api/cards/{owner_user_id}"
+        user_card_df = fetch_data_json(url)
+        full_name = user_card_df['full_name'].iloc[0]
+        print(full_name)
+        position = user_card_df["position"].iloc[0]
+        print(position)
+
         contact_count_by_user_data = {
             "owner_user_id": owner_user_id,
+            "full_name": full_name,
+            "position": position,
             "contact_count": contact_count_by_user,
         }
         contact_count_list.append(contact_count_by_user_data)
@@ -48,7 +58,7 @@ def show_data(year):
     st.dataframe(contact_count_df)
 
 
-st.title(f"Contact History Count")
+st.title(f"1年以内の名刺交換回数ランキング")
 
 with st.form(key='year_form'):
     year = st.text_input(label='Year')
