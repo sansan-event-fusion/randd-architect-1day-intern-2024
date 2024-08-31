@@ -51,7 +51,4 @@ for index in user_ids:
     else:
         user_data.append(user_info)
 
-st.write(
-    pd.DataFrame(user_data)[["full_name", "position", "company_name", "address", "phone_number"]]
-)
-
+st.write(pd.DataFrame(user_data)[["full_name", "position", "company_name", "address", "phone_number"]])
