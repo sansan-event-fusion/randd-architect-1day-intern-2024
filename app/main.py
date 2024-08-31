@@ -3,8 +3,9 @@ import requests
 import streamlit as st
 
 # title
-st.title("Sansan")
+st.title("所有している名刺一覧")
 
+st.write("以下に所有している名刺一覧を時系列順に表示します")
 contact_url = "https://circuit-trial.stg.rd.ds.sansan.com/api/contacts/?offset=0&limit=100"
 
 response = requests.get(contact_url, timeout=10)
@@ -17,7 +18,6 @@ n = 0  # 例として0番目を指定
 if isinstance(contact_data, list) and n < len(contact_data) and "owner_user_id" in contact_data[n]:
     owner_user_id = contact_data[n]["owner_user_id"]
 
-st.write(f"オーナーユーザーID: {owner_user_id}")
 
 # オーナーユーザーIDに紐づいているユーザー情報を取得
 owner_user_url = (
@@ -51,4 +51,26 @@ for index in user_ids:
     else:
         user_data.append(user_info)
 
-st.write(pd.DataFrame(user_data)[["full_name", "position", "company_name", "address", "phone_number"]])
+st.write(pd.DataFrame(user_data)[["user_id","full_name", "position", "company_name", "address", "phone_number"]])
+
+
+# ユーザー(owner_user_id)の所有している名刺の人と類似度が高いユーザーのtop10を取得
+options = st.selectbox(
+    "選択を行うと関連するユーザーの情報が表示されます",
+    [user_info["full_name"] for user_info in user_data],
+)
+
+# user_dataの中でoptionsの"full_name"から"user_id"を取得
+selected_user_id = None
+for user_info in user_data:
+    if user_info["full_name"] == options:
+        selected_user_id = user_info["user_id"]
+        break
+
+similar_top_10_url = f"https://circuit-trial.stg.rd.ds.sansan.com/api/cards/{selected_user_id}/similar_top10_users"
+
+response = requests.get(similar_top_10_url, timeout=10)
+similar_top_10_data = response.json()
+
+st.write(pd.DataFrame(similar_top_10_data)[["full_name", "position", "company_name", "address", "phone_number"]])
+
