@@ -32,7 +32,7 @@ user_ids = []  # 空のリストを作成
 for n in range(len(owner_user_data)):
     get_user_id = owner_user_data[n]["user_id"]
     get_create_at = owner_user_data[n]["created_at"]
-    user_ids.append((get_user_id,get_create_at)) # get_user_idをリストに格納
+    user_ids.append((get_user_id, get_create_at))  # get_user_idをリストに格納
 
 # ここで時系列順にsortを行う
 user_ids.sort(key=lambda x: x[1])
