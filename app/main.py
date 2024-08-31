@@ -73,4 +73,3 @@ response = requests.get(similar_top_10_url, timeout=10)
 similar_top_10_data = response.json()
 
 st.write(pd.DataFrame(similar_top_10_data)[["full_name", "position", "company_name", "address", "phone_number"]])
-
