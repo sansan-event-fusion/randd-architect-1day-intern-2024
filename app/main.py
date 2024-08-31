@@ -2,7 +2,6 @@ import pandas as pd
 import requests
 import streamlit as st
 
-
 st.title("名刺交換表示")
 url = "https://circuit-trial.stg.rd.ds.sansan.com/api/"
 
