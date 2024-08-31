@@ -20,7 +20,9 @@ if isinstance(contact_data, list) and n < len(contact_data) and "owner_user_id" 
 st.write(f"オーナーユーザーID: {owner_user_id}")
 
 # オーナーユーザーIDに紐づいているユーザー情報を取得
-owner_user_url = f"https://circuit-trial.stg.rd.ds.sansan.com/api/contacts/owner_users/{owner_user_id}?offset=0&limit=100"
+owner_user_url = (
+    f"https://circuit-trial.stg.rd.ds.sansan.com/api/contacts/owner_users/{owner_user_id}?offset=0&limit=100"
+)
 
 response = requests.get(owner_user_url, timeout=10)
 owner_user_data = response.json()
