@@ -43,7 +43,7 @@ for index in user_ids:
     user_id = index[0]
     user_url = f"https://circuit-trial.stg.rd.ds.sansan.com/api/cards/{user_id}"
     response = requests.get(user_url, timeout=10)
-    user_info = (response.json())
+    user_info = response.json()
 
     # フラットなリストに変換
     if isinstance(user_info, list):
