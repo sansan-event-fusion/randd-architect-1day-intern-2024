@@ -51,7 +51,7 @@ for index in user_ids:
     else:
         user_data.append(user_info)
 
-st.write(pd.DataFrame(user_data)[["user_id","full_name", "position", "company_name", "address", "phone_number"]])
+st.write(pd.DataFrame(user_data)[["user_id", "full_name", "position", "company_name", "address", "phone_number"]])
 
 
 # ユーザー(owner_user_id)の所有している名刺の人と類似度が高いユーザーのtop10を取得
