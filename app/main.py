@@ -3,9 +3,9 @@ import requests
 import streamlit as st
 
 # title
-st.title("所有している名刺一覧")
+st.title("名刺一覧")
 
-st.write("以下に所有している名刺一覧を時系列順に表示します")
+st.write("所有している名刺の一覧を時系列順に表示します")
 contact_url = "https://circuit-trial.stg.rd.ds.sansan.com/api/contacts/?offset=0&limit=100"
 
 response = requests.get(contact_url, timeout=10)
@@ -56,7 +56,7 @@ st.write(pd.DataFrame(user_data)[["user_id","full_name", "position", "company_na
 
 # ユーザー(owner_user_id)の所有している名刺の人と類似度が高いユーザーのtop10を取得
 options = st.selectbox(
-    "選択を行うと関連するユーザーの情報が表示されます",
+    "自分が所有している名刺の人物に関連するユーザーの情報が表示されます",
     [user_info["full_name"] for user_info in user_data],
 )
 
